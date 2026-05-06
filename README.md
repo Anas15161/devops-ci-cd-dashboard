@@ -23,9 +23,22 @@ A complete end-to-end DevOps project showcasing a fully automated pipeline for a
 
 ## 📋 Features
 
-- **Simple Web App**: Node.js Express API with health check.
+- **DevOps Dashboard**: Real-time monitoring of app status, metrics, and pipeline metadata.
+- **Enhanced Monitoring**: Dedicated endpoints for health, metrics, and build info.
 - **Unit Testing**: Automated tests using Jest and Supertest.
-- **Dockerized**: Multi-stage Dockerfile for optimized production images.
+- **Dockerized**: Multi-stage Dockerfile with build-time metadata injection.
+
+## 🖥️ Dashboard & Pages
+The application now includes a modern UI accessible at the root:
+- `/` : Main Dashboard (Uptime, Performance, Build Info)
+- `/tests` : Visualized test results
+- `/pipeline` : CI/CD flow diagram
+- `/about` : Project overview
+
+## 📡 API Endpoints
+- `GET /api/health` : System health check
+- `GET /api/metrics` : Real-time uptime and request tracking
+- `GET /api/build-info` : Metadata about the current deployment
 - **Orchestration**: Docker Compose for local development.
 - **CI/CD**: GitHub Actions for automated testing, building, and deployment.
 - **Automation**: Makefile for easy management.

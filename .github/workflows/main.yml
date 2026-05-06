@@ -41,6 +41,11 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/mini-devops-project:latest
+          build-args: |
+            APP_VERSION=1.1.0
+            COMMIT_HASH=${{ github.sha }}
+            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+            PIPELINE_STATUS=success
 
   deploy:
     needs: build-and-push
