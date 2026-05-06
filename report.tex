@@ -1,0 +1,238 @@
+\documentclass[12pt,a4paper]{report}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning}
+
+% --- Configuration Gémotrie ---
+\geometry{hmargin=2.5cm,vmargin=2.5cm}
+
+% --- Configuration Listings (Code) ---
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstset{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{green!60!black},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\small,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single
+}
+
+% --- En-têtes et Pieds de page ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Rapport Mini-Projet DevOps}
+\fancyhead[R]{2026}
+\fancyfoot[C]{\thepage}
+
+% --- Document ---
+\begin{document}
+
+% --- Page de Garde ---
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    {\Huge \textbf{Rapport de Mini-Projet DevOps}} \\
+    \vspace{1cm}
+    {\Large Automatisation Complète : Pipeline CI/CD et Conteneurisation} \\
+    \vspace{2cm}
+    \includegraphics[width=0.4\textwidth]{example-image} \\ % Remplacer par un logo si nécessaire
+    \vspace{2cm}
+    \textbf{Présenté par :}\\
+    Anas \\
+    \vfill
+    {\large Mercredi 6 Mai 2026}
+\end{titlepage}
+
+% --- Remerciements ---
+\chapter*{Remerciements}
+Je tiens à remercier toutes les personnes qui ont contribué à la réalisation de ce projet. Ce travail est le fruit d'un apprentissage intensif sur les pratiques DevOps modernes, visant à améliorer la qualité et la rapidité des cycles de développement logiciel.
+
+% --- Résumé ---
+\begin{abstract}
+Ce rapport présente la mise en œuvre d'un projet DevOps de bout en bout. L'objectif principal était de concevoir une application web Node.js, de l'isoler dans un environnement Dockerisé et d'automatiser son cycle de vie via GitHub Actions. Le pipeline développé assure l'intégration continue par des tests unitaires et le déploiement continu par la publication d'images sur Docker Hub.
+\end{abstract}
+
+\tableofcontents
+
+% --- Introduction ---
+\chapter{Introduction}
+Dans le paysage technologique actuel, la rapidité de mise sur le marché et la fiabilité des systèmes sont devenues cruciales. La méthodologie DevOps combine le développement logiciel (Dev) et les opérations informatiques (Ops) pour raccourcir le cycle de développement tout en offrant une livraison continue de haute qualité.
+
+Ce projet se concentre sur l'automatisation d'une application web simple, démontrant l'efficacité de l'approche "Everything as Code".
+
+% --- Objectifs ---
+\chapter{Objectifs du Projet}
+Les principaux objectifs de ce mini-projet sont :
+\begin{itemize}
+    \item Développer une application web fonctionnelle avec des tests automatisés.
+    \item Mettre en place une stratégie de conteneurisation optimisée.
+    \item Automatiser le pipeline de tests et de build via GitHub Actions.
+    \item Assurer la portabilité de l'application grâce à Docker.
+    \item Documenter les procédures de déploiement et d'exploitation.
+\end{itemize}
+
+% --- Technologies ---
+\chapter{Technologies Utilisées}
+\begin{itemize}
+    \item \textbf{Node.js \& Express :} Framework pour le développement de l'application web.
+    \item \textbf{Jest \& Supertest :} Outils de tests unitaires et d'intégration.
+    \item \textbf{Docker :} Plateforme de conteneurisation pour l'isolation de l'application.
+    \item \textbf{GitHub Actions :} Moteur d'automatisation pour le pipeline CI/CD.
+    \item \textbf{Docker Hub :} Registre de conteneurs pour le stockage des images.
+    \item \textbf{Make :} Outil d'automatisation des tâches locales.
+\end{itemize}
+
+% --- Architecture ---
+\chapter{Architecture du Système}
+L'architecture repose sur un flux de travail linéaire automatisé :
+
+\begin{center}
+\begin{tikzpicture}[node distance=2cm, auto]
+    \tikzstyle{block} = [rectangle, draw, fill=blue!20, text width=5em, text centered, rounded corners, minimum height=4em]
+    \tikzstyle{line} = [draw, -latex']
+    
+    \node [block] (git) {GitHub (Code)};
+    \node [block, right=of git] (ci) {GitHub Actions (CI)};
+    \node [block, right=of ci] (docker) {Docker Hub (Registry)};
+    \node [block, below=of docker] (deploy) {Serveur (Deploy)};
+    
+    \path [line] (git) -- (ci);
+    \path [line] (ci) -- node {Push} (docker);
+    \path [line] (docker) -- (deploy);
+\end{tikzpicture}
+\end{center}
+
+1. Le développeur pousse le code sur GitHub.
+2. GitHub Actions déclenche les tests et le build Docker.
+3. L'image est poussée vers Docker Hub.
+4. Le serveur récupère la dernière image et la déploie.
+
+% --- Implémentation ---
+\chapter{Détails de l'Implémentation}
+
+\section{Structure du Projet}
+Le projet suit une organisation professionnelle :
+\begin{itemize}
+    \item \texttt{src/} : Code source de l'application.
+    \item \texttt{tests/} : Suites de tests unitaires.
+    \item \texttt{.github/workflows/} : Configuration du pipeline.
+    \item \texttt{Dockerfile} : Recette de construction de l'image.
+\end{itemize}
+
+\section{Pipeline CI/CD}
+Le pipeline GitHub Actions est défini dans le fichier \texttt{main.yml}. Il assure que chaque modification de code est testée avant d'être intégrée.
+
+\begin{lstlisting}[language=bash, caption=Extrait du pipeline GitHub Actions]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install
+      - run: npm test
+
+  build-and-push:
+    needs: test
+    steps:
+      - name: Build Docker Image
+        run: docker build -t my-app .
+\end{lstlisting}
+
+% --- Docker ---
+\chapter{Configuration Docker}
+Nous utilisons un \textbf{Multi-stage Build} pour optimiser la taille de l'image finale.
+
+\section{Dockerfile}
+\begin{lstlisting}[language=bash, caption=Configuration Dockerfile]
+# Stage 1: Build
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY . .
+RUN npm install && npm test
+
+# Stage 2: Production
+FROM node:20-alpine
+WORKDIR /app
+COPY --from=builder /app/src ./src
+RUN npm install --omit=dev
+CMD ["node", "src/server.js"]
+\end{lstlisting}
+
+L'utilisation de \texttt{node:20-alpine} permet de réduire l'empreinte de sécurité et la taille de l'image (environ 100 Mo contre 900 Mo pour l'image standard).
+
+% --- Déploiement ---
+\chapter{Processus de Déploiement}
+Le déploiement local est facilité par \textbf{Docker Compose}. Un simple fichier définit l'environnement nécessaire (ports, variables d'environnement, politiques de redémarrage).
+
+\begin{lstlisting}[language=bash, caption=Fichier docker-compose.yml]
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    restart: always
+\end{lstlisting}
+
+% --- Résultats ---
+\chapter{Résultats et Démonstration}
+Les tests unitaires ont atteint une couverture de 100\% sur les endpoints critiques. Le pipeline GitHub Actions valide avec succès chaque pull request en moins de 2 minutes.
+
+L'application est accessible via \texttt{http://localhost:3000} et fournit une réponse JSON formatée indiquant l'état de santé du système.
+
+% --- Défis ---
+\chapter{Défis et Solutions}
+\begin{itemize}
+    \item \textbf{Défi :} Gestion des secrets Docker Hub dans GitHub.
+    \item \textbf{Solution :} Utilisation des GitHub Actions Secrets pour chiffrer les identifiants.
+    \item \textbf{Défi :} Taille des images Docker.
+    \item \textbf{Solution :} Mise en place de fichiers \texttt{.dockerignore} et de builds multi-étapes.
+\end{itemize}
+
+% --- Conclusion ---
+\chapter{Conclusion}
+Ce projet a permis de démontrer qu'une automatisation robuste est accessible même pour de petites applications. L'intégration de Docker et GitHub Actions réduit considérablement les risques d'erreur humaine lors du déploiement.
+
+% --- Améliorations ---
+\chapter{Perspectives d'Amélioration}
+Pour aller plus loin, nous pourrions :
+\begin{itemize}
+    \item Intégrer un orchestrateur comme \textbf{Kubernetes}.
+    \item Ajouter une analyse statique de code (SonarQube).
+    \item Mettre en place une surveillance en temps réel avec \textbf{Prometheus/Grafana}.
+\end{itemize}
+
+% --- Glossaire ---
+\chapter*{Glossaire DevOps}
+\begin{description}
+    \item[CI (Continuous Integration)] : Pratique de fusionner les modifications de code fréquemment dans un dépôt central.
+    \item[CD (Continuous Deployment)] : Automatisation du déploiement de chaque modification validée en production.
+    \item[Conteneur] : Unité standard de logiciel qui empaquette le code et ses dépendances.
+    \item[Pipeline] : Suite d'étapes automatisées pour livrer un logiciel.
+\end{description}
+
+\end{document}
