@@ -29,6 +29,7 @@
 <body>
     <nav>
         <a href="/" id="nav-home">Dashboard</a>
+        <a href="/explorer.html" id="nav-explorer">Explorer</a>
         <a href="/tests" id="nav-tests">Tests</a>
         <a href="/pipeline" id="nav-pipeline">Pipeline</a>
         <a href="/about" id="nav-about">About</a>
@@ -53,15 +54,15 @@
                             <div class="value status-up">${health.status}</div>
                             <div class="badge">Uptime: ${metrics.uptime}s</div>
                         </div>
+                        <div class="card" style="border: 2px solid var(--primary); cursor: pointer;" onclick="window.location.href='/explorer.html'">
+                            <h3>Architecture</h3>
+                            <div class="value" style="color: var(--primary)">Deep Dive →</div>
+                            <div>L'intérêt de chaque ligne</div>
+                        </div>
                         <div class="card">
                             <h3>Deployment</h3>
                             <div class="value">${build.version}</div>
                             <div>Hash: <code>${build.commit.substring(0,7)}</code></div>
-                        </div>
-                        <div class="card">
-                            <h3>Pipeline</h3>
-                            <div class="value">${build.pipelineStatus.toUpperCase()}</div>
-                            <div>Last build: ${new Date(build.buildDate).toLocaleString()}</div>
                         </div>
                         <div class="card">
                             <h3>Performance</h3>

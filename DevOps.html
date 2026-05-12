@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini-Projet DevOps – Automatisation CI/CD avec Docker & GitHub Actions</title>
+    <style>
+        :root {
+            --bg: #0a0e14;
+            --surface: #131820;
+            --surface2: #1a1f2b;
+            --accent: #4dabf7;
+            --accent2: #20c997;
+            --accent3: #ff6b6b;
+            --gold: #fcc419;
+            --text: #c8d6e5;
+            --text-muted: #7c8b9d;
+            --border: #252b36;
+            --radius: 14px;
+            --radius-sm: 8px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-sans);
+            line-height: 1.7;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Particules d'arrière-plan canvas */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.35;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(10, 14, 20, 0.82);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            transition: var(--transition);
+        }
+        .navbar.scrolled {
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+        }
+        .navbar-inner {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+        .nav-logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.3px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-logo .icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1.6rem;
+            list-style: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+            padding: 4px 0;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width var(--transition);
+            border-radius: 2px;
+        }
+        .nav-links a:hover {
+            color: #fff;
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        .nav-cta {
+            background: var(--accent);
+            color: #000 !important;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: var(--transition);
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: -0.2px;
+        }
+        .nav-cta:hover {
+            background: #74c0fc;
+            box-shadow: 0 0 20px rgba(77, 171, 247, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Contenu principal */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding-top: 80px;
+            padding-bottom: 4rem;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(77, 171, 247, 0.1);
+            border: 1px solid rgba(77, 171, 247, 0.25);
+            color: var(--accent);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            margin-bottom: 1.8rem;
+            animation: fadeInUp 0.7s ease forwards;
+        }
+        .hero-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent2);
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.6);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(32, 201, 151, 0);
+            }
+        }
+        .hero h1 {
+            font-size: 3.6rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1.15;
+            margin-bottom: 1.2rem;
+            animation: fadeInUp 0.7s ease 0.1s forwards;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 650px;
+            margin: 0 auto 2.5rem;
+            animation: fadeInUp 0.7s ease 0.2s forwards;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+        .hero-meta {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            animation: fadeInUp 0.7s ease 0.3s forwards;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+        .hero-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(28px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Sections */
+        .section {
+            padding: 5rem 0;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.6px;
+            margin-bottom: 0.6rem;
+        }
+        .section-title .accent {
+            color: var(--accent);
+        }
+        .section-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            font-size: 1rem;
+        }
+
+        /* Cartes */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem 1.6rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            cursor: default;
+        }
+        .card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 8px 30px rgba(77, 171, 247, 0.08);
+            transform: translateY(-3px);
+        }
+        .card-icon {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            transition: var(--transition);
+        }
+        .card:hover .card-icon {
+            transform: scale(1.1);
+        }
+        .card h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .card-accent {
+            border-left: 3px solid var(--accent);
+        }
+        .card-accent2 {
+            border-left: 3px solid var(--accent2);
+        }
+        .card-accent3 {
+            border-left: 3px solid var(--accent3);
+        }
+
+        /* Pipeline animé */
+        .pipeline-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0;
+            margin: 2.5rem 0;
+            padding: 1rem;
+        }
+        .pipeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: pulse-step 2.5s ease-in-out infinite;
+            position: relative;
+        }
+        .pipeline-step:nth-child(1) {
+            animation-delay: 0s;
+        }
+        .pipeline-step:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        .pipeline-step:nth-child(5) {
+            animation-delay: 0.8s;
+        }
+        .pipeline-step:nth-child(7) {
+            animation-delay: 1.2s;
+        }
+        .pipeline-step:nth-child(9) {
+            animation-delay: 1.6s;
+        }
+        @keyframes pulse-step {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.04);
+            }
+        }
+        .step-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--surface2);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 2;
+        }
+        .step-circle.active {
+            border-color: var(--accent2);
+            background: rgba(32, 201, 151, 0.08);
+            box-shadow: 0 0 24px rgba(32, 201, 151, 0.25);
+        }
+        .step-label {
+            margin-top: 0.6rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--text-muted);
+            max-width: 80px;
+        }
+        .step-arrow {
+            font-size: 1.6rem;
+            color: var(--accent);
+            margin: 0 0.5rem;
+            animation: arrow-bounce 0.7s ease-in-out infinite alternate;
+        }
+        @keyframes arrow-bounce {
+            from {
+                transform: translateX(-4px);
+            }
+            to {
+                transform: translateX(4px);
+            }
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1.4rem 1.6rem;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            line-height: 1.7;
+            overflow-x: auto;
+            position: relative;
+            margin: 1rem 0;
+            color: #c9d1d9;
+        }
+        .code-block .keyword {
+            color: #ff7b72;
+        }
+        .code-block .string {
+            color: #a5d6ff;
+        }
+        .code-block .comment {
+            color: #6e7681;
+        }
+        .code-block .func {
+            color: #d2a8ff;
+        }
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: -10px;
+            right: 16px;
+            background: var(--accent);
+            color: #000;
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2.5rem;
+            margin: 2rem 0;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+            border-radius: 2px;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.8rem;
+            padding-left: 1.5rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.5rem;
+            top: 6px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--accent2);
+            border: 3px solid var(--bg);
+            box-shadow: 0 0 0 3px var(--accent2);
+            z-index: 2;
+        }
+        .timeline-item h4 {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+        .timeline-item p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Stats */
+        .stats-row {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.8rem 2rem;
+            text-align: center;
+            min-width: 160px;
+            transition: var(--transition);
+        }
+        .stat-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 6px 22px rgba(77, 171, 247, 0.1);
+        }
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .footer strong {
+            color: #fff;
+        }
+
+        /* Boutons */
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+            font-size: 0.9rem;
+            letter-spacing: -0.2px;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+        }
+        .btn-primary:hover {
+            background: #74c0fc;
+            box-shadow: 0 0 24px rgba(77, 171, 247, 0.45);
+            transform: translateY(-2px);
+        }
+        .btn-outline {
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            background: transparent;
+        }
+        .btn-outline:hover {
+            background: rgba(77, 171, 247, 0.08);
+            box-shadow: 0 0 18px rgba(77, 171, 247, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            .nav-links {
+                display: none;
+            }
+            .pipeline-flow {
+                gap: 0.3rem;
+            }
+            .step-circle {
+                width: 44px;
+                height: 44px;
+                font-size: 1.2rem;
+            }
+            .step-arrow {
+                font-size: 1.1rem;
+                margin: 0 0.2rem;
+            }
+            .step-label {
+                font-size: 0.7rem;
+                max-width: 60px;
+            }
+            .code-block {
+                font-size: 0.7rem;
+                padding: 1rem;
+            }
+        }
+
+        /* Tooltip style pour icônes */
+        [data-tooltip] {
+            position: relative;
+        }
+        [data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Canvas de particules -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <a href="#" class="nav-logo">
+                <span class="icon">⚙️</span> DevOps Mini-Projet
+            </a>
+            <ul class="nav-links">
+                <li><a href="#objectifs">Objectifs</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#implementation">Implémentation</a></li>
+                <li><a href="#ameliorations">Améliorations</a></li>
+                <li><a href="#resultats">Résultats</a></li>
+            </ul>
+            <a href="#architecture" class="nav-cta">Voir le pipeline →</a>
+        </div>
+    </nav>
+
+    <!-- Contenu principal -->
+    <div class="main-container">
+
+        <!-- Hero -->
+        <section class="hero" id="hero">
+            <div class="hero-badge">
+                <span class="dot"></span> Pipeline CI/CD en production · 2025-2026
+            </div>
+            <h1>
+                Automatisation <span class="gradient">CI/CD</span><br>
+                avec Docker & GitHub Actions
+            </h1>
+            <p class="hero-subtitle">
+                Un pipeline DevOps de bout en bout : intégration continue, tests automatisés,
+                conteneurisation optimisée et déploiement continu vers Docker Hub.
+            </p>
+            <div class="hero-meta">
+                <span>👨‍💻 Anas Haddou & Amine Mohammed Tayek</span>
+                <span>🎓 Encadré par Pr. Mohtaram</span>
+                <span>🏫 École Marocaine d'Ingénierie</span>
+            </div>
+        </section>
+
+        <!-- Section Objectifs -->
+        <section class="section" id="objectifs">
+            <h2 class="section-title">🎯 <span class="accent">Objectifs</span> du Projet</h2>
+            <p class="section-subtitle">Les piliers de notre démarche DevOps</p>
+            <div class="cards-grid">
+                <div class="card card-accent">
+                    <div class="card-icon">🧪</div>
+                    <h3>Application testée</h3>
+                    <p>Développement d'une API Node.js/Express avec des tests unitaires Jest & Supertest couvrant 100% des endpoints.</p>
+                </div>
+                <div class="card card-accent2">
+                    <div class="card-icon">🐳</div>
+                    <h3>Conteneurisation optimisée</h3>
+                    <p>Images Docker minimalistes (Alpine, multi-stage build) réduisant la taille de 900 Mo à ~100 Mo.</p>
+                </div>
+                <div class="card card-accent">
+                    <div class="card-icon">⚡</div>
+                    <h3>Pipeline automatisé</h3>
+                    <p>GitHub Actions déclenche tests + build + push Docker Hub à chaque commit, en moins de 2 minutes.</p>
+                </div>
+                <div class="card card-accent3">
+                    <div class="card-icon">📦</div>
+                    <h3>Portabilité totale</h3>
+                    <p>Application exécutable partout grâce à Docker Compose : un simple <code>docker compose up</code> suffit.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Architecture & Pipeline -->
+        <section class="section" id="architecture">
+            <h2 class="section-title">🏗️ <span class="accent">Architecture</span> du Système</h2>
+            <p class="section-subtitle">Flux CI/CD linéaire entièrement automatisé</p>
+
+            <!-- Pipeline animé -->
+            <div class="pipeline-flow">
+                <div class="pipeline-step">
+                    <div class="step-circle active" data-tooltip="Développeur">💻</div>
+                    <span class="step-label">Code Push</span>
+                </div>
+                <span class="step-arrow">→</span>
+                <div class="pipeline-step">
+                    <div class="step-circle active" data-tooltip="GitHub Actions">🔬</div>
+                    <span class="step-label">Tests</span>
+                </div>
+                <span class="step-arrow">→</span>
+                <div class="pipeline-step">
+                    <div class="step-circle active" data-tooltip="Docker Build">🏗️</div>
+                    <span class="step-label">Build</span>
+                </div>
+                <span class="step-arrow">→</span>
+                <div class="pipeline-step">
+                    <div class="step-circle active" data-tooltip="Docker Hub">☁️</div>
+                    <span class="step-label">Push</span>
+                </div>
+                <span class="step-arrow">→</span>
+                <div class="pipeline-step">
+                    <div class="step-circle active" data-tooltip="Serveur">🚀</div>
+                    <span class="step-label">Déploiement</span>
+                </div>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>1. Push du code sur GitHub</h4>
+                    <p>Le développeur pousse ses modifications. Le pipeline se déclenche automatiquement.</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>2. Exécution des tests unitaires</h4>
+                    <p>Jest & Supertest valident l'intégrité de l'API avant toute construction.</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>3. Build de l'image Docker</h4>
+                    <p>Construction multi-étapes avec injection des métadonnées (commit, date, version).</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>4. Push vers Docker Hub</h4>
+                    <p>L'image est publiée sur le registre, prête à être déployée n'importe où.</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>5. Déploiement automatique</h4>
+                    <p>Le serveur récupère la dernière image et la met en production (Docker Compose).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Implémentation -->
+        <section class="section" id="implementation">
+            <h2 class="section-title">⚙️ <span class="accent">Détails</span> de l'Implémentation</h2>
+            <p class="section-subtitle">Structure du projet, Dockerfile et pipeline GitHub Actions</p>
+
+            <h3 style="font-weight:600;margin-bottom:0.8rem;">📁 Structure du Projet</h3>
+            <div class="code-block" data-lang="arborescence">
+                <span class="comment"># Organisation professionnelle</span><br>
+                ├── <span class="keyword">src/</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Code source (routes, contrôleurs, services)</span><br>
+                ├── <span class="keyword">tests/</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Suites de tests Jest + Supertest</span><br>
+                ├── <span class="keyword">.github/workflows/</span> <span class="comment"># Pipeline CI/CD (main.yml)</span><br>
+                ├── <span class="keyword">Dockerfile</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Build multi-stage optimisé</span><br>
+                └── <span class="keyword">docker-compose.yml</span> <span class="comment"># Déploiement local simplifié</span>
+            </div>
+
+            <h3 style="font-weight:600;margin:1.5rem 0 0.8rem;">🐳 Dockerfile – Build Multi-Stage</h3>
+            <div class="code-block" data-lang="Dockerfile">
+                <span class="comment"># Stage 1: Build</span><br>
+                <span class="keyword">FROM</span> node:20-alpine <span class="keyword">AS</span> builder<br>
+                <span class="keyword">WORKDIR</span> /app<br>
+                <span class="keyword">COPY</span> . .<br>
+                <span class="keyword">RUN</span> npm install && npm test<br><br>
+                <span class="comment"># Stage 2: Production (image finale ~100 Mo)</span><br>
+                <span class="keyword">FROM</span> node:20-alpine<br>
+                <span class="keyword">WORKDIR</span> /app<br>
+                <span class="keyword">COPY --from=</span>builder /app/src ./src<br>
+                <span class="keyword">RUN</span> npm install <span class="string">--omit=dev</span><br>
+                <span class="keyword">CMD</span> [<span class="string">"node"</span>, <span class="string">"src/server.js"</span>]
+            </div>
+
+            <h3 style="font-weight:600;margin:1.5rem 0 0.8rem;">🔧 Pipeline GitHub Actions (main.yml)</h3>
+            <div class="code-block" data-lang="YAML">
+                <span class="keyword">jobs:</span><br>
+                &nbsp;&nbsp;<span class="func">test:</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">runs-on:</span> ubuntu-latest<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">steps:</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="keyword">uses:</span> actions/checkout@v4<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="keyword">run:</span> npm install<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="keyword">run:</span> npm test<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="keyword">name:</span> Build Docker Image<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">run:</span> docker build -t my-app .
+            </div>
+        </section>
+
+        <!-- Section Améliorations -->
+        <section class="section" id="ameliorations">
+            <h2 class="section-title">🚀 <span class="accent">Améliorations</span> & Fonctionnalités Avancées</h2>
+            <p class="section-subtitle">Transformation en solution DevOps professionnelle complète</p>
+            <div class="cards-grid">
+                <div class="card card-accent">
+                    <div class="card-icon">📊</div>
+                    <h3>Dashboard DevOps</h3>
+                    <p>Interface web temps réel : statut UP/DOWN, uptime, version, hash commit, date de déploiement et visualisation du pipeline.</p>
+                </div>
+                <div class="card card-accent2">
+                    <div class="card-icon">📡</div>
+                    <h3>Endpoints de Monitoring</h3>
+                    <p>Routes REST : <code>/api/health</code>, <code>/api/version</code>, <code>/api/metrics</code>, <code>/api/build-info</code> – prêtes pour Prometheus/Grafana.</p>
+                </div>
+                <div class="card card-accent3">
+                    <div class="card-icon">🧩</div>
+                    <h3>Refactoring Modulaire</h3>
+                    <p>Séparation claire : <code>routes/</code>, <code>controllers/</code>, <code>services/</code>, <code>public/</code> – architecture maintenable et évolutive.</p>
+                </div>
+                <div class="card card-accent">
+                    <div class="card-icon">🔒</div>
+                    <h3>Sécurité Renforcée</h3>
+                    <p>GitHub Secrets pour les credentials, images minimales (Alpine), isolation par conteneurs, validation stricte avant déploiement.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Résultats -->
+        <section class="section" id="resultats">
+            <h2 class="section-title">📈 <span class="accent">Résultats</span> & Performance</h2>
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Couverture de tests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">&lt; 2 min</div>
+                    <div class="stat-label">Temps du pipeline</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">~100 Mo</div>
+                    <div class="stat-label">Taille de l'image</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Étapes automatisées</div>
+                </div>
+            </div>
+            <p style="text-align:center;color:var(--text-muted);max-width:650px;margin:0 auto;">
+                ✅ Tests unitaires à 100% sur les endpoints critiques · Pipeline validé en moins de 2 minutes ·
+                Application accessible via <code>http://localhost:3000</code> avec réponse JSON de santé.
+            </p>
+        </section>
+
+        <!-- Section Conclusion -->
+        <section class="section" style="text-align:center;">
+            <h2 class="section-title">💡 <span class="accent">Conclusion</span></h2>
+            <p style="max-width:700px;margin:0 auto 2rem;color:var(--text-muted);">
+                Ce projet démontre qu'une automatisation robuste est accessible même pour de petites applications.
+                L'intégration de Docker et GitHub Actions réduit considérablement les risques d'erreur humaine
+                lors du déploiement, tout en assurant une traçabilité complète.
+            </p>
+            <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+                <span style="background:var(--surface2);padding:8px 16px;border-radius:20px;font-size:0.85rem;">🔮 Kubernetes</span>
+                <span style="background:var(--surface2);padding:8px 16px;border-radius:20px;font-size:0.85rem;">📊 SonarQube</span>
+                <span style="background:var(--surface2);padding:8px 16px;border-radius:20px;font-size:0.85rem;">📈 Prometheus/Grafana</span>
+            </div>
+            <p style="margin-top:1rem;font-size:0.85rem;color:var(--text-muted);">Perspectives d'amélioration futures</p>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025-2026 <strong>Anas Haddou & Amine Mohammed Tayek</strong> · Encadré par <strong>Pr. Mohtaram</strong></p>
+        <p style="margin-top:0.3rem;">École Marocaine d'Ingénierie – Filière Ingénierie Informatique · Mini-Projet DevOps</p>
+    </footer>
+
+    <script>
+        // === Canvas de particules ===
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationId;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
+
+        class Particle {
+            constructor() {
+                this.reset();
+                this.y = Math.random() * canvas.height;
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = -10;
+                this.size = Math.random() * 1.8 + 0.5;
+                this.speedY = Math.random() * 0.4 + 0.15;
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.color = Math.random() < 0.5 ?
+                    `rgba(77,171,247,${this.opacity})` :
+                    `rgba(32,201,151,${this.opacity})`;
+            }
+            update() {
+                this.y += this.speedY;
+                if (this.y > canvas.height + 10) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            const count = Math.min(Math.floor((canvas.width * canvas.height) / 11000), 160);
+            particles = [];
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            // Lignes de connexion subtiles
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 100) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(77,171,247,${0.04 * (1 - dist/100)})`;
+                        ctx.lineWidth = 0.4;
+                        ctx.stroke();
+                    }
+                }
+            }
+            animationId = requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // === Scroll: navbar shadow ===
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 40) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // === Scroll reveal pour les sections ===
+        const sections = document.querySelectorAll('.section');
+        const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -50px 0px' };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+        sections.forEach(section => observer.observe(section));
+
+        // === Effet de comptage animé pour les stats ===
+        const statNumbers = document.querySelectorAll('.stat-number');
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const text = el.textContent.trim();
+                    // On ne lance l'animation qu'une fois
+                    if (el.dataset.animated === 'true') return;
+                    el.dataset.animated = 'true';
+
+                    if (text.includes('%')) {
+                        const target = parseInt(text);
+                        animateNumber(el, 0, target, 1200, '%');
+                    } else if (text.includes('min')) {
+                        el.textContent = '< 2 min';
+                        el.style.opacity = '1';
+                    } else if (text.includes('Mo')) {
+                        el.textContent = '~100 Mo';
+                        el.style.opacity = '1';
+                    } else if (!isNaN(parseInt(text))) {
+                        const target = parseInt(text);
+                        animateNumber(el, 0, target, 800, '');
+                    }
+                }
+            });
+        }, { threshold: 0.6 });
+        statNumbers.forEach(s => statsObserver.observe(s));
+
+        function animateNumber(el, start, end, duration, suffix) {
+            let startTime = null;
+
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = Math.min((timestamp - startTime) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3); // ease-out
+                const current = Math.floor(start + (end - start) * eased);
+                el.textContent = current + suffix;
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    el.textContent = end + suffix;
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        // === Smooth scroll pour les ancres ===
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        console.log('🚀 Page de présentation DevOps chargée avec succès.');
+        console.log('📊 Pipeline CI/CD | 🐳 Docker | ⚡ GitHub Actions | ☁️ Docker Hub');
+    </script>
+</body>
+</html>
