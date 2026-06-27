@@ -19,7 +19,7 @@ test:
 	npm test
 
 build:
-	docker build -t mini-devops-project .
+	docker build -t devops-ci-cd-dashboard .
 
 run:
 	$(DOCKER_COMPOSE) up -d

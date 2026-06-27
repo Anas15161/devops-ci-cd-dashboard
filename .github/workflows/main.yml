@@ -40,7 +40,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mini-devops-project:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-ci-cd-dashboard:latest
           build-args: |
             APP_VERSION=1.1.0
             COMMIT_HASH=${{ github.sha }}

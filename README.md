@@ -1,125 +1,217 @@
-# 🚀 DevOps Mini Project
+<div align="center">
+  <img src="banner.png" alt="DevOps CI/CD Dashboard Banner" width="100%" />
 
-[![CI/CD Pipeline](https://github.com/<your-username>/<your-repo>/actions/workflows/main.yml/badge.svg)](https://github.com/<your-username>/<your-repo>/actions)
-![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)
-![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=flat&logo=node.js&logoColor=white)
+  # 🚀 DevOps CI/CD Dashboard
 
-A complete end-to-end DevOps project showcasing a fully automated pipeline for a Node.js web application.
+  [![CI/CD Pipeline](https://github.com/Anas15161/devops-ci-cd-dashboard/actions/workflows/main.yml/badge.svg)](https://github.com/Anas15161/devops-ci-cd-dashboard/actions)
+  [![Node.js Version](https://img.shields.io/badge/Node.js-v20+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+  [![Express Framework](https://img.shields.io/badge/Express-v5.x-000000?logo=express&logoColor=white)](https://expressjs.com/)
+  [![Docker Conteneur](https://img.shields.io/badge/Docker-Enabled-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+  [![Testing with Jest](https://img.shields.io/badge/Jest-100%25-C21325?logo=jest&logoColor=white)](https://jestjs.io/)
+  [![Workflow Automation](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?logo=github-actions&logoColor=white)](https://github.com/features/actions)
+  [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
-## 🏗 Architecture Diagram
+  <p align="center">
+    <strong>A premium, fully-automated DevOps CI/CD workflow and real-time dashboard.</strong><br />
+    Designed to demonstrate professional software delivery practices using Node.js, Jest, multi-stage Docker builds, and automated GitHub Actions pipelines.
+  </p>
+</div>
 
-```text
-[ Developer ] --(git push)--> [ GitHub Repository ]
-                                     |
-                                     v
-                          [ GitHub Actions (CI/CD) ]
-                          /          |           \
-               (Test)    /     (Build Docker)     \    (Deploy)
-              [ Jest ] <--- [ Docker Hub ] ---> [ Render/Cloud ]
-                                     |
-                                     v
-                            [ Running Container ]
+---
+
+## 📖 Project Overview
+
+This repository showcases a complete DevOps pipeline built around a modular **Node.js/Express web dashboard**. The dashboard provides real-time application uptime, request counters, health status, and live CI/CD build metadata injected directly during compilation.
+
+### ✨ Key Features
+* 📊 **Interactive DevOps Dashboard**: Accessible at `/` with real-time performance indicators and system details.
+* 📂 **Architecture Explorer**: Live code-line explorer at `/explorer.html` detailing the DevOps significance of every line of code.
+* 🧪 **Visual Test Suite**: Dynamic visualization of Jest test cases and coverage statistics at `/tests`.
+* 🤖 **Fully-Automated CI/CD**: Clean GitHub Actions workflow executing testing, container builds, and deployment.
+* 🐳 **Optimized Conteneurisation**: Multi-stage `Dockerfile` leveraging Alpine Linux to reduce final image size by **88%** (from ~900MB to ~110MB).
+* 🛠️ **Local Orchestration**: Pre-configured `Makefile` and `docker-compose.yml` for single-command environments.
+
+---
+
+## 🏗️ System Architecture & Pipeline Flow
+
+The following diagram illustrates the linear automated lifecycle of the application, from local development commits to production containers:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Dev as Developer
+    participant Git as GitHub Repo
+    participant GA as GitHub Actions (CI/CD)
+    participant DH as Docker Hub (Registry)
+    participant Prod as Production Host
+
+    Dev->>Git: git push (to main branch)
+    activate Git
+    Note over GA: Triggered automatically
+    Git-->>GA: Run CI/CD Pipeline
+    deactivate Git
+    activate GA
+
+    rect rgb(30, 41, 59)
+        Note over GA: Stage 1: Integration & Unit Tests
+        GA->>GA: Install dependencies
+        GA->>GA: Run Jest & Supertest suites
+    end
+
+    rect rgb(13, 148, 136)
+        Note over GA: Stage 2: Optimized Docker Build
+        GA->>GA: Run multi-stage Docker build
+        GA->>GA: Inject build metadata (SHA, date, version)
+    end
+
+    GA->>DH: Push tagged production image
+    deactivate GA
+    activate DH
+    Note over DH: devops-ci-cd-dashboard:latest
+    DH-->>Prod: Pull latest image
+    deactivate DH
+    activate Prod
+    Note over Prod: Re-launch container
+    Prod-->>Dev: Live Dashboard updated!
+    deactivate Prod
 ```
 
-## 📋 Features
-
-- **DevOps Dashboard**: Real-time monitoring of app status, metrics, and pipeline metadata.
-- **Enhanced Monitoring**: Dedicated endpoints for health, metrics, and build info.
-- **Unit Testing**: Automated tests using Jest and Supertest.
-- **Dockerized**: Multi-stage Dockerfile with build-time metadata injection.
-
-## 🖥️ Dashboard & Pages
-The application now includes a modern UI accessible at the root:
-- `/` : Main Dashboard (Uptime, Performance, Build Info)
-- `/tests` : Visualized test results
-- `/pipeline` : CI/CD flow diagram
-- `/about` : Project overview
+---
 
 ## 📡 API Endpoints
-- `GET /api/health` : System health check
-- `GET /api/metrics` : Real-time uptime and request tracking
-- `GET /api/build-info` : Metadata about the current deployment
-- **Orchestration**: Docker Compose for local development.
-- **CI/CD**: GitHub Actions for automated testing, building, and deployment.
-- **Automation**: Makefile for easy management.
 
-## 🛠 Setup & Local Development
+The backend provides several JSON endpoints monitored by the dashboard:
+
+| Endpoint | Method | Description | Sample Response |
+| :--- | :--- | :--- | :--- |
+| `/api/health` | `GET` | System health check indicators | `{"status":"UP", "timestamp":"..."}` |
+| `/api/metrics` | `GET` | Live runtime uptime and request counts | `{"uptime": 128, "requests": 42}` |
+| `/api/build-info` | `GET` | Metadata injected at build time | `{"version":"1.1.0", "commit":"a1c4bc7", ...}` |
+| `/api/version` | `GET` | Current package release version | `{"version":"1.0.0"}` |
+
+---
+
+## 🛠️ Installation & Local Setup
+
+Get the project running locally in less than 2 minutes using Node.js or Docker.
+
+<details>
+<summary><b>🚀 Running with Node.js locally (without Docker)</b></summary>
 
 ### Prerequisites
-- Node.js (v20+)
-- Docker & Docker Compose
-- Make (optional)
+* **Node.js** (v20 or higher)
+* **npm**
 
-### Installation
-1. Clone the repository:
+### Steps
+1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
-   cd mini-devops-project
+   git clone https://github.com/Anas15161/devops-ci-cd-dashboard.git
+   cd devops-ci-cd-dashboard
    ```
 
-2. Install dependencies:
+2. **Configure environment variables:**
    ```bash
-   make install  # or npm install
+   cp .env.example .env
    ```
 
-3. Run tests:
+3. **Install dependencies:**
    ```bash
-   make test     # or npm test
+   npm install
    ```
 
-4. Run locally:
+4. **Run unit tests:**
+   ```bash
+   npm test
+   ```
+
+5. **Start development server:**
    ```bash
    npm start
    ```
-   Access at `http://localhost:3000`
+   Open **[http://localhost:3000](http://localhost:3000)** in your browser.
+</details>
 
-### Running with Docker
-1. Build and run using Docker Compose:
+<details>
+<summary><b>🐳 Running with Docker and Docker Compose</b></summary>
+
+### Prerequisites
+* **Docker Engine** & **Docker Compose**
+
+### Steps
+1. **Build the container and run detached:**
    ```bash
-   make run      # or docker-compose up -d
+   docker compose up -d --build
    ```
-2. Check logs:
+   *(Or simply run `make run` if you have Make installed).*
+
+2. **Verify running logs:**
    ```bash
-   docker-compose logs -f
+   docker compose logs -f
    ```
-3. Stop services:
+
+3. **Shutdown container:**
    ```bash
-   make stop     # or docker-compose down
+   docker compose down
    ```
+   *(Or simply run `make stop`).*
+</details>
 
-## 🤖 CI/CD Explanation
+<details>
+<summary><b>🛠️ Makefile Automation Cheat Sheet</b></summary>
 
-The pipeline defined in `.github/workflows/main.yml` consists of three stages:
+A Makefile is provided to abstract docker commands and make local development seamless:
 
-1.  **Test**: Runs on every push and pull request. It installs dependencies and executes Jest tests.
-2.  **Build & Push**: Triggers only on pushes to the `main` branch. It builds the Docker image and pushes it to Docker Hub.
-3.  **Deploy**: Simulations of a production deployment (can be connected to Render, Railway, or any SSH server).
+```bash
+make install  # Installs npm dependencies locally
+make test     # Runs test suite with Jest
+make build    # Builds local Docker image (devops-ci-cd-dashboard)
+make run      # Starts docker-compose services
+make stop     # Shuts down docker-compose services
+make clean    # Cleans node_modules and coverage reports
+```
+</details>
 
-### GitHub Secrets Required
-To make the pipeline work, add these secrets to your GitHub repository:
-- `DOCKERHUB_USERNAME`: Your Docker Hub username.
-- `DOCKERHUB_TOKEN`: Your Docker Hub Personal Access Token.
-- `RENDER_DEPLOY_HOOK`: (Optional) Deployment webhook URL.
+---
+
+## 🤖 CI/CD Workflow & GitHub Secrets
+
+The automation pipeline defined in `.github/workflows/main.yml` executes on every push to the `main` branch.
+
+To enable the pipeline, configure the following **Secrets** under your GitHub repository (`Settings > Secrets and variables > Actions`):
+
+* `DOCKERHUB_USERNAME`: Your Docker Hub profile handle.
+* `DOCKERHUB_TOKEN`: Personal Access Token from Docker Hub settings.
+* `RENDER_DEPLOY_HOOK`: *(Optional)* Deploy trigger webhook for hosting platforms.
+
+---
 
 ## 📂 Project Structure
 
 ```text
-├── .github/workflows/  # CI/CD pipeline definitions
-├── src/                # Application source code
-│   ├── app.js          # Express app logic
-│   └── server.js       # Server entry point
-├── tests/              # Unit tests
-├── Dockerfile          # Production container definition
-├── docker-compose.yml  # Local orchestration
-├── Makefile            # Automation scripts
-└── README.md           # Documentation
+├── .github/workflows/   # CI/CD Pipeline definition (GitHub Actions)
+├── src/                 # Application codebase
+│   ├── public/          # Frontend files (HTML, CSS, JS routing)
+│   │   ├── explorer.html# Interactive codebase analyzer UI
+│   │   └── index.html   # Live Metrics Dashboard UI
+│   ├── routes/          # Express route declarations
+│   ├── controllers/     # Controller layer handling requests
+│   ├── services/        # Service layer managing metrics
+│   ├── app.js           # Express App configuration
+│   └── server.js        # Main server entrypoint
+├── tests/               # Automated unit tests (Jest & Supertest)
+├── Dockerfile           # Optimized multi-stage build script
+├── docker-compose.yml   # Docker compose configuration
+├── Makefile             # Standard automation scripts
+├── report.tex           # Technical report source (LaTeX)
+└── README.md            # Repository documentation (this file)
 ```
 
-## 🔍 Troubleshooting
+---
 
-- **Port Conflict**: If port 3000 is taken, change the `PORT` in `.env`.
-- **Docker Permission**: Ensure your user is in the `docker` group or run with `sudo`.
-- **Tests Failing**: Check the output of `npm test` for detailed error messages.
+## 👥 Authors & Academic Context
 
-## 📄 License
-ISC
+* **Student Developers**: 
+  * **Anas Haddou** & **Amine Mohammed Tayek**
+* **Supervisor**: **Pr. Mohtaram**
+* **Institution**: **École Marocaine d'Ingénierie** (Filière Ingénierie Informatique)
