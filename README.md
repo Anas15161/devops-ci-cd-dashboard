@@ -23,7 +23,7 @@
 
 This repository showcases a complete DevOps pipeline built around a modular **Node.js/Express web dashboard**. The dashboard provides real-time application uptime, request counters, health status, and live CI/CD build metadata injected directly during compilation.
 
-### ✨ Key Features
+#### ✨ Key Features
 * 📊 **Interactive DevOps Dashboard**: Accessible at `/` with real-time performance indicators and system details.
 * 📂 **Architecture Explorer**: Live code-line explorer at `/explorer.html` detailing the DevOps significance of every line of code.
 * 🧪 **Visual Test Suite**: Dynamic visualization of Jest test cases and coverage statistics at `/tests`.
