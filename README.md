@@ -92,7 +92,7 @@ The backend provides several JSON endpoints monitored by the dashboard:
 
 ---
 
-## 🛠️ Installation & Local Setup
+### 🛠️ Installation & Local Setup
 
 Get the project running locally in less than 2 minutes using Node.js or Docker.
 
